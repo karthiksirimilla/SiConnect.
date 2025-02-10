@@ -1,0 +1,42 @@
+{%extends "master.html"%} {%block title%}login{%endblock%} {%block body%} {%
+include 'message.html' with context %}
+
+<div
+  class="container shadow-lg col-12 col-md-5 p-5 mt-5 center border bg-white rounded-5 max-vw-100"
+>
+  <form method="post">
+    <h2 align="center" class="p-2 mt-3">Login</h2>
+
+    <div class="form-group p-2 mt-1">
+      <div class="p-2">
+        <label for="username" class="fs-6" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Username</label><br>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-control"
+          placeholder="Enter username"
+          required
+        />
+      </div>
+      <div class="p-2">
+        <label for="password" class="fs-6" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Password</label><br>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          placeholder="Enter password"
+          required
+        />
+      </div>
+      <br />
+      <div align="center">
+        <button class="col-12 btn btn-primary p-2" type="submit">Login</button>
+      </div>
+    </div>
+      <div class="p-2 fs-6 " style="text-align:center;"><em>Don't have an account? </em><a href="{{ url_for('signup_influencer') }}">Register</a></div>
+  </form>
+</div>
+
+{%endblock%}

@@ -1,0 +1,201 @@
+{%extends "master.html"%} {%block title%}admin{%endblock%} {%block body%} {%
+include 'message.html' with context %}
+
+<div
+  class="container shadow-lg col-6 col-md-6 p-5 mt-5 center border bg-white rounded-5 max-vw-100"
+>
+  <h2>Welcome Admin!</h2>
+</div>
+
+<div class="row">
+  <div
+    class="col-6 col-md-10 border container shadow-lg p-5 mt-4 center border bg-white rounded-5 max-vw-100"
+  >
+    <h2 class="pb-3">Flagged Campaign:</h2>
+
+    <hr />
+    {%for flag in flags %} {%if flag.flagged_obj_type == "Campaign"%}
+    <div class="p-2 mt-2 d-flex justify-content-between">
+      <div>
+        <h4>{{flag.campaign.name}}</h4>
+      </div>
+
+      <div class="mt-1">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#campaign{{flag.campaign.id}}"
+        >
+          View Details
+        </button>
+      </div>
+    </div>
+    <hr />
+    {%endif%} {%endfor%}
+  </div>
+
+  <div
+    class="col-12 col-md-10 border container shadow-lg p-5 mt-4 center border bg-white rounded-5 max-vw-100"
+  >
+    <h2 class="pb-3">Flagged Users:</h2>
+
+    <hr />
+    {%for flag in flags %} {%if flag.flagged_obj_type == "User"%}
+    <div class="p-2 mt-2 d-flex justify-content-between">
+      <div>
+        <h4>{{flag.user.username}}</h4>
+      </div>
+      <div class="mt-2">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#user{{flag.id}}"
+        >
+          View Details
+        </button>
+      </div>
+    </div>
+    <hr />
+    {%endif%} {%endfor%}
+  </div>
+</div>
+
+
+<!-- model for Pending request sent modal -->
+{%for flag in flags %} {%if flag.flagged_obj_type == "Campaign"%}
+<div
+  class="modal fade"
+  id="campaign{{flag.campaign.id}}"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Campaign Details</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="p-5">
+            <!-- <img
+              src="/static/campaign.png"
+              class="img-thumbnail"
+              alt=""
+            /> -->
+            
+            <div class="p-4">
+              <h2 class="pb-2"><i class="fa fa-search"></i> Description</h2><hr />
+              <h2 class="pb-2">Status:</h2>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Title: {{ flag.campaign.name }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Budget: {{ flag.campaign.budget}}$
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                {{ flag.campaign.description }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Start Date: {{ flag.campaign.start_date }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                End Date: {{ flag.campaign.end_date }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+
+        <a
+          href="{{ url_for('admin_remove_flag',flagid=flag.id) }}"
+          class="btn btn-primary"
+          >Remove Flag</a
+        >
+
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%} {%endfor%}
+<!-- ---------------------------------------------------------------- -->
+
+<!-- model for Pending request received modal -->
+{%for flag in flags %} {%if flag.flagged_obj_type == "User"%}
+<div
+  class="modal fade"
+  id="user{{flag.id}}"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Campaign Details</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="p-5">
+            <!-- <img
+              src=""
+              class="img-thumbnail"
+              alt=""
+            /> -->
+            <h2 class="pb-2"><i class="fa fa-search"></i> Details</h2><hr />
+            <div class="p-4">
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Username: {{ flag.user.username }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Email: {{ flag.user.email }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Role: {{ flag.user.role }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a
+          href="{{ url_for('admin_remove_flag',flagid=flag.id) }}"
+          class="btn btn-primary"
+          >Remove Flag</a
+        >
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%}
+{%endfor%}
+
+
+{%endblock%}
+

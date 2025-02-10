@@ -1,0 +1,516 @@
+{%extends "master.html"%} {%block title%}Home{%endblock%} {%block body%} {%
+include 'message.html' with context %}
+<div
+  class="container shadow-lg col-12 col-md-10 p-5 mt-5 center border bg-white rounded-5 max-vw-100"
+>
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <img
+        src="/static/sponser.png"
+        alt="image of u"
+        class="col-12 rounded-5"
+        style="height: 300px; width: 300px"
+      />
+    </div>
+    <div class="col-12 col-md-8">
+      <div class="p-4 ms-5">
+        <h3 class="pb-2" style="color: #222222">Welcome {{user.username}} </h3>
+        <p style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-style:italic; font-size:large">Hey, Hi! Hope you're doing well today. Welcome to SiConnect.</p>
+        {%if flagged%}
+        <h4 style="color: #cf5050">You are flagged</h4>
+        <h4 style="color: #cf5050">Reason: {{sponsor_flag.reason}}</h4>
+        {%endif%}
+        <br>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#editdetails"
+        >
+          Edit Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div
+    class="col-6 col-md-12 border container shadow-lg p-5 mt-5 center border bg-white rounded-5 max-vw-100"
+  >
+    <h2 class="pb-3">Active Campaign:</h2>
+
+    <hr />
+    {%for adrequest in ad_requests %} {%if adrequest.status == 'Accepted'%}
+    <div class="p-1 mt-1 d-flex justify-content-between" >
+      <div>
+        <h4>{{adrequest.campaign.name}}</h4>
+        {% if adrequest.request_creator == "Influencer"%}
+        <h4>Influencer: {{adrequest.sender.username}}</h4>
+        {% else %}
+        <h4>Influencer: {{adrequest.receiver.username}}</h4>
+        {% endif %}
+      </div>
+      <div class="mt-3">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#running{{adrequest.id}}"
+        >
+          View 
+        </button>
+      </div>
+    </div>
+    <hr />
+    {%endif%} {%endfor%}
+  </div>
+
+  <div
+    class="col-12 col-md-12 border container shadow-lg p-5 mt-5 center border bg-white rounded-5 max-vw-100"
+  >
+    <h2 class="pb-3">Pending Requests:</h2>
+
+    <hr />
+    {%for adrequest in ad_requests %} {%if adrequest.sender_id == user.id and
+    adrequest.status == 'Pending' %}
+    <div class="p-1 mt-1 d-flex justify-content-between">
+      <div>
+        <h4>{{adrequest.campaign.name}}</h4>
+        <h4>To {{adrequest.receiver.username}}</h4>
+      </div>
+      <div class="mt-3">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#{{adrequest.id}}"
+        >
+          View 
+        </button>
+      </div>
+    </div>
+    <hr />
+    {%endif%} {%endfor%}
+  </div>
+</div>
+
+<div
+  class="col-12 col-md-12 border container shadow-lg p-5 mt-5 center border rounded-5 max-vw-100" style="background-color: #afe59fe1"
+>
+  <h2 class="p-1">New Request:</h2>
+<hr>
+  {%for adrequest in ad_requests %} {%if adrequest.receiver_id == user.id and
+  adrequest.status == 'Pending' %}
+  <div class="p-1 row">
+    <div class="col-12 col-md-6 ms-2">
+      <h5 class="">
+        {{adrequest.campaign.name}} | {{adrequest.sender.username}}
+      </h5>
+    </div>
+    <div class="col-12 col-md-4">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#{{adrequest.id}}"
+      >
+        View
+      </button>
+      <a
+        href="{{url_for('req_accept',requestid=adrequest.id)}}"
+        class="btn btn-success"
+        >Accept</a
+      >
+      <a
+        href="{{url_for('req_reject',requestid=adrequest.id)}}"
+        class="btn btn-danger"
+        >Reject</a
+      >
+    </div>
+  </div>
+  {%endif%} {%endfor%}
+</div>
+
+<!-- model for Pending request sent modal -->
+{%for adrequest in ad_requests %} {%if adrequest.sender_id == user.id and
+adrequest.status == 'Pending' %}
+<div
+  class="modal fade"
+  id="{{adrequest.id}}"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Campaign Details</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="p-5">
+            <div class="p-4">
+              <h2 class="pb-2"><i class="fa fa-search"></i> Description</h2><hr>
+              <h2 class="pb-2">Status: {{adrequest.status}}</h2>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Title: {{ adrequest.campaign.name }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Budget: {{adrequest.payment_amount}}$
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Message sent: {{adrequest.messages}}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Requirements: {{adrequest.requirements}}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                {{ adrequest.campaign.description }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Start Date: {{ adrequest.campaign.start_date }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                End Date: {{ adrequest.campaign.end_date }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%} {%endfor%}
+<!-- ---------------------------------------------------------------- -->
+
+<!-- model for Pending request recived modal -->
+{%for adrequest in ad_requests %} {%if adrequest.receiver_id == user.id and
+adrequest.status == 'Pending' %}
+<div
+  class="modal fade"
+  id="{{adrequest.id}}"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Campaign Details</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="p-5">
+            <div class="p-4">
+              <h2 class="pb-2"><i class="fa fa-search"></i> Details</h2><hr>
+              <h2 class="pb-1">Status: {{adrequest.status}}</h2>
+              <h2 class="pb-1">Sent by: {{adrequest.sender.username}}</h2>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Title: {{ adrequest.campaign.name }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Budget: {{adrequest.payment_amount}}$
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Message: {{adrequest.messages}}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Requirements: {{adrequest.requirements}}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                {{ adrequest.campaign.description }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                Start Date: {{ adrequest.campaign.start_date }}
+              </h5>
+              <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                End Date: {{ adrequest.campaign.end_date }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary m-2"
+          data-bs-toggle="modal"
+          data-bs-target="#negotiate{{adrequest.id}}"
+        >
+          Negotiate
+        </button>
+
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%} {%endfor%}{%for adrequest in ad_requests %} {%if adrequest.status ==
+'Accepted'%}
+
+<div
+  class="modal fade"
+  id="running{{adrequest.id}}"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Campaign Details</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="p-5">
+            <!-- <img
+              src="/static/campaign.png"
+              class="img-thumbnail"
+              alt=""
+            /> -->
+            <div class="p-2 m-2">
+              <h2 class="pb-1"><i class="fa fa-search"></i>  Description</h2></i><hr  />
+              <div class="p-4 m-5 pt-1 mt-4 pb-1 mb-1">
+                <h5 class="pb-1 f-6 ms-2">Status: {{adrequest.status}}</h5>
+
+                {% if adrequest.request_creator == "Influencer"%}
+                <h5 class="p-1 f-6 ms-2">
+                  Sponsor: {{adrequest.receiver.username}}
+                </h5>
+                <h5 class="p-1 f-6 ms-2">
+                  Influencer: {{adrequest.sender.username}}
+                </h5>
+
+                {% else %}
+                <h5 class="p-1 f-6 ms-2">
+                  Influencer: {{adrequest.receiver.username}}
+                </h5>
+                <h5 class="p-1 ms-2">Sponsor: {{adrequest.sender.username}}</h5>
+
+                {% endif %}
+
+                <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                  Title: {{ adrequest.campaign.name }}
+                </h5>
+                <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                  Budget: {{adrequest.payment_amount}}$
+                </h5>
+                <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                  {{ adrequest.campaign.description }}
+                </h5>
+                <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                  Start Date: {{ adrequest.campaign.start_date }}
+                </h5>
+                <h5 class="p-1 ms-2" style="color: #2a2a2a">
+                  End Date: {{ adrequest.campaign.end_date }}
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%} {%endfor%}
+
+<div
+  class="modal fade"
+  id="editdetails"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Sponsor Details</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="p-2">
+            <div class="p-2">
+              <form
+                class="form"
+                method="post"
+                action="{{ url_for('edit_sponsor_post') }}"
+              >
+                <h2 align="center" class="p-2 ">Edit Profile</h2>
+                <hr />
+                <label for="email">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="form-control"
+                  placeholder="{{user.email}}"
+                />
+
+                <label for="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  class="form-control"
+                  placeholder="{{user.username}}"
+                />
+
+                <h3>change password</h3>
+                <label for="oldpassword">Enter Old Password</label>
+                <input
+                  type="password"
+                  id="oldpassword"
+                  name="oldpassword"
+                  class="form-control"
+                />
+
+                <label for="newpassword">Enter New Password</label>
+                <input
+                  type="password"
+                  id="newpassword"
+                  name="newpassword"
+                  class="form-control"
+                />
+
+                <label for="confirmnewpassword">Reenter New Password</label>
+                <input
+                  type="password"
+                  id="confirmnewpassword"
+                  name="confirmnewpassword"
+                  class="form-control"
+                />
+
+                <div align="center">
+                  <button class="btn btn-primary mt-3" type="submit">
+                    Update Details
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%for adrequest in ad_requests %} {%if adrequest.receiver_id == user.id and
+adrequest.status == 'Pending' %}
+<div
+  class="modal fade"
+  id="negotiate{{adrequest.id}}"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Negotiate</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          class="form"
+          method="post"
+          action="{{ url_for('Negotiate',requestid=adrequest.id) }}"
+        >
+          <h2 align="center" class="p-2 mt-3">Negotiate</h2>
+
+          <label for="payment_amount">Amount</label>
+          <input
+            type="number"
+            id="payment_amount"
+            name="payment_amount"
+            class="form-control"
+            placeholder="Amount to be paid"
+            required
+          />
+
+          <label for="messages">Message</label>
+          <input
+            type="text"
+            id="messages"
+            name="messages"
+            class="form-control"
+          />
+
+          <label for="requirements">Requirements</label>
+          <input
+            type="text"
+            id="requirements"
+            name="requirements"
+            class="form-control"
+          />
+
+          <div align="center">
+            <button class="btn btn-primary m-2" type="submit">Negotiate</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%} {%endfor%} {%endblock%}
