@@ -30,23 +30,33 @@
 
     <label for="password1">Password</label>
     <input
-      type="password"
-      id="password1"
-      name="password1"
-      class="form-control"
-      placeholder="Enter Password"
-      required
-    />
+    type="password"
+    id="password1"
+    name="password1"
+    class="form-control"
+    placeholder="Enter Password"
+    required
+    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*#?&]).{8,}"
+    title="Must be 8+ characters, include uppercase, lowercase, number & special character."
+  />
+
+  <small class="text-muted mb-3">
+    Password must be at least 8 characters long and include:
+    <br>• an uppercase letter, <br>• a lowercase letter, <br>• a number, <br>• and a special character.
+  </small>
+  <br />
 
     <label for="password2">Confirm Password</label>
     <input
-      type="password"
-      id="password2"
-      name="password2"
-      class="form-control"
-      placeholder="Confirm Password"
-      required
-    />
+    type="password"
+    id="password2"
+    name="password2"
+    class="form-control"
+    placeholder="Confirm Password"
+    required
+    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*#?&]).{8,}"
+    title="Must match the above password."
+  />
 
     <label for="instagram_reach">Instagram Reach <i class="fa fa-instagram" style="font-size:18px"></i> :</label>
     <input
