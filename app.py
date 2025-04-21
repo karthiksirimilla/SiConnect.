@@ -18,7 +18,7 @@ import io
 import base64
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from werkzeug.utils import secure_filename
-
+import re
 
 
 app = Flask(__name__)
@@ -153,6 +153,16 @@ def signup_sponsor():
 # --------------------------------------------------------------------------------
 
 
+
+def is_strong_password(password):
+    pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$"
+    return re.match(pattern, password)
+
+
+# --------------------------------------------------------------------------------
+
+
+    
 @app.route("/signup/influencer", methods=["POST"])
 def signup_influencer_post():
     email = request.form.get("email")
@@ -171,7 +181,11 @@ def signup_influencer_post():
     if password1 != password2:
         flash("Password entered does not match")
         return redirect(url_for("signup_influencer"))
-
+    
+    if not is_strong_password(password1):
+        flash("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.")
+        return redirect(url_for("signup_influencer"))
+    
     existing_user = User.query.filter_by(email=email).first()
 
     if existing_user:
@@ -201,6 +215,7 @@ def signup_influencer_post():
 # --------------------------------------------------------------------------------
 
 
+
 @app.route("/signup/sponsor", methods=["POST"])
 def signup_sponsor_post():
     email = request.form.get("email")
@@ -218,6 +233,10 @@ def signup_sponsor_post():
         flash("Passwords do not match")
         return redirect(url_for("signup_sponsor"))
 
+    if not is_strong_password(password1):
+        flash("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.")
+        return redirect(url_for("signup_influencer"))
+    
     user = User.query.filter_by(username=username).first()
 
     if user:
